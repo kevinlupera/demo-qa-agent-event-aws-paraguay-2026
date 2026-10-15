@@ -1,0 +1,97 @@
+# Gate de evals por PR: crea un sandbox, corre el golden dataset (backend/evals/golden.json)
+# con evaluadores deterministas y SIEMPRE destruye el sandbox.
+#
+# Strands (DockerSandbox / SshSandbox) solo se conecta a un entorno que ya existe: crear y
+# destruir el sandbox es trabajo de este pipeline. Por eso el paso de limpieza lleva
+# `if: always()`: sin él, un job que falla deja el contenedor (o la EC2) vivo.
+#
+# Secretos: OPENAI_API_KEY (el agente de la demo usa OpenAI; ver backend/common.py).
+
+name: evals
+
+on:
+  pull_request:
+
+concurrency:
+  group: evals-${{ github.event.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  # id-token: write   # solo si activas el bloque de EC2 de abajo (OIDC)
+
+jobs:
+  evals:
+    # Los PR desde forks no reciben secretos: el job se omite en vez de fallar.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SANDBOX: eval-pr-${{ github.event.number }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r backend/requirements.txt
+
+      # 1) SE CREA: un contenedor por PR, sin red. Strands se conecta a él, no lo crea.
+      - name: Crear sandbox
+        run: |
+          docker run -d --name "$SANDBOX" --label eval-pr=${{ github.event.number }} \
+            --network none python:3.12-slim sleep infinity
+          echo "EVAL_SANDBOX_CONTAINER=$SANDBOX" >> "$GITHUB_ENV"
+
+      # 2) SE PRUEBA: exit 1 si falla algún evaluador => el merge queda bloqueado.
+      - name: Correr evals
+        working-directory: backend
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          strands-evals run evals/golden.json \
+            --task evals.task:run \
+            --custom-evaluator evals.evaluators:ExpectedContains \
+            --fail-on any \
+            -o "$GITHUB_WORKSPACE/eval-report.json"
+
+      - name: Guardar reporte
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report-pr-${{ github.event.number }}
+          path: eval-report.json
+          if-no-files-found: ignore
+
+      # 3) SE DESTRUYE: pase lo que pase en los pasos anteriores.
+      - name: Destruir sandbox
+        if: always()
+        run: docker rm -f "$SANDBOX" || true
+
+  # --- Variante con una EC2 desechable (SshSandbox) -------------------------------------
+  # No la probé: necesita tu cuenta AWS. Reemplaza los pasos "Crear/Destruir sandbox" por:
+  #
+  #   - uses: aws-actions/configure-aws-credentials@v4     # OIDC: sin llaves de larga vida
+  #     with:
+  #       role-to-assume: ${{ vars.EVAL_ROLE_ARN }}         # permisos mínimos: run/terminate
+  #       aws-region: us-west-2
+  #
+  #   - name: Crear sandbox (EC2)
+  #     run: |
+  #       ID=$(aws ec2 run-instances --image-id "$AMI" --instance-type t3.small \
+  #              --tag-specifications "ResourceType=instance,Tags=[{Key=eval-pr,Value=${{ github.event.number }}}]" \
+  #              --query 'Instances[0].InstanceId' --output text)
+  #       aws ec2 wait instance-running --instance-ids "$ID"
+  #       echo "EC2_ID=$ID" >> "$GITHUB_ENV"
+  #
+  #   - name: Destruir sandbox (EC2)
+  #     if: always()
+  #     run: aws ec2 terminate-instances --instance-ids "$EC2_ID"
+  #
+  # Programa además una limpieza de las instancias con la etiqueta eval-pr que superen unas
+  # horas: es la red de seguridad si el runner muere antes del paso `always()`.
