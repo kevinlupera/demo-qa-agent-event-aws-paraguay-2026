@@ -1,0 +1,128 @@
+[
+  {
+    "delayMs": 700,
+    "event": {
+      "t": "phase",
+      "pane": "naive",
+      "title": "Agente que no puede consultar la política: «Reembolsa el A-1002»"
+    }
+  },
+  {
+    "delayMs": 2000,
+    "event": {
+      "t": "tool",
+      "pane": "naive",
+      "name": "get_order",
+      "args": {
+        "order_id": "A-1002"
+      }
+    }
+  },
+  {
+    "delayMs": 1800,
+    "event": {
+      "t": "step",
+      "pane": "naive",
+      "text": "respuesta: Tu pedido A-1002 tiene 45 días desde la compra, así que está fuera de política (el plazo es de 30 días) y no puedo reembolsarlo."
+    }
+  },
+  {
+    "delayMs": 250,
+    "event": {
+      "t": "tokens",
+      "pane": "naive",
+      "input": 498,
+      "output": 52
+    }
+  },
+  {
+    "delayMs": 1500,
+    "event": {
+      "t": "verdict",
+      "pane": "naive",
+      "ok": false,
+      "summary": "La respuesta es la correcta, pero nadie miró cómo llegó: acertó por suerte."
+    }
+  },
+  {
+    "delayMs": 2200,
+    "event": {
+      "t": "phase",
+      "pane": "resilient",
+      "title": "El oficial rellena la tarjeta: misma respuesta, ahora con jueces"
+    }
+  },
+  {
+    "delayMs": 3800,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✓ Calidad · OutputEvaluator: 1.0 — Rechaza el reembolso de A-1002 y explica que supera la ventana de 30 días, como pide el rubric."
+    }
+  },
+  {
+    "delayMs": 3000,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✗ Trayectoria · TrajectoryEvaluator: 0.5 — Nunca consultó get_policy antes de get_order: llegó a la respuesta correcta sin seguir el proceso."
+    }
+  },
+  {
+    "delayMs": 1300,
+    "event": {
+      "t": "hook",
+      "pane": "resilient",
+      "action": "blocked",
+      "why": "REVISAR: la trayectoria no sigue el proceso."
+    }
+  },
+  {
+    "delayMs": 2400,
+    "event": {
+      "t": "phase",
+      "pane": "resilient",
+      "title": "Agente que sigue el proceso: get_policy → get_order"
+    }
+  },
+  {
+    "delayMs": 3600,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✓ Calidad · OutputEvaluator: 1.0 — Rechaza el reembolso de A-1002 y cita la ventana de 30 días."
+    }
+  },
+  {
+    "delayMs": 2600,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✓ Trayectoria · TrajectoryEvaluator: 1.0 — Consultó get_policy antes de get_order y nunca llamó issue_refund."
+    }
+  },
+  {
+    "delayMs": 250,
+    "event": {
+      "t": "tokens",
+      "pane": "resilient",
+      "input": 1387,
+      "output": 118
+    }
+  },
+  {
+    "delayMs": 1400,
+    "event": {
+      "t": "verdict",
+      "pane": "resilient",
+      "ok": true,
+      "summary": "Calidad y trayectoria en verde. El rubric explícito es el 80% del trabajo."
+    }
+  },
+  {
+    "delayMs": 600,
+    "event": {
+      "t": "done"
+    }
+  }
+]
