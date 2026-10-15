@@ -1,0 +1,21 @@
+# OS / editor
+.DS_Store
+
+# Env (keep the example)
+.env
+.env.*
+!.env.example
+
+# Local agent tooling
+.atl/
+
+# Dependencies and build output
+node_modules/
+.nuxt/
+.output/
+.venv/
+__pycache__/
+
+# Frontend uses pnpm (see README); stray artifacts
+frontend/package-lock.json
+frontend/--port/
