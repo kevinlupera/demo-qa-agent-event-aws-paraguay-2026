@@ -19,3 +19,6 @@ __pycache__/
 # Frontend uses pnpm (see README); stray artifacts
 frontend/package-lock.json
 frontend/--port/
+
+# AgentCore CLI: deployed account state (ARNs, ids)
+qaagent/agentcore/.cli/deployed-state.json

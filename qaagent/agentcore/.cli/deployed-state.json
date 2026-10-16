@@ -1,0 +1,17 @@
+{
+  "targets": {
+    "default": {
+      "resources": {
+        "runtimes": {
+          "qa_agent": {
+            "runtimeId": "qaagent_qa_agent-5aDhkx3Nrs",
+            "runtimeArn": "arn:aws:bedrock-agentcore:us-east-1:600627330313:runtime/qaagent_qa_agent-5aDhkx3Nrs",
+            "roleArn": "arn:aws:iam::600627330313:role/AgentCore-qaagent-default-ApplicationAgentQaAgentRu-U6qWAmoCct50"
+          }
+        },
+        "stackName": "AgentCore-qaagent-default",
+        "deployHash": "8167878af6aea768"
+      }
+    }
+  }
+}
