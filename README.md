@@ -113,8 +113,9 @@ agentcore add agent --name qa_agent --type byo --build CodeZip --language Python
 
 El nombre del proyecto es solo alfanumérico (máx. 23). Variables de entorno del Runtime (nunca en
 el repo): `OPENAI_API_KEY`, `OPENAI_MODEL_ID`, `GUARDRAIL_ID`, `GUARDRAIL_VERSION`. El rol de
-ejecución necesita `bedrock:ApplyGuardrail` sobre el guardrail. `qaagent/agentcore/.env.local` y
-`deployed-state.json` están ignorados por git.
+ejecución necesita `bedrock:ApplyGuardrail` sobre el guardrail. `qaagent/agentcore/.env.local` está
+ignorado por git. `qaagent/agentcore/.cli/deployed-state.json` sí se versiona (el CLI lo hace a
+propósito) y contiene el ID de cuenta y los ARN, no credenciales.
 
 Si cambias dependencias, actualiza `backend/pyproject.toml` **y** `backend/requirements.txt`
 (el primero lo usa el deploy, el segundo el CI).
