@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     // server route falls back to a local `python app.py` on LOCAL_AGENT_URL — same events,
     // no AWS round-trip, which is what you want while building the demo.
     agentRuntimeArn: '',
-    awsRegion: 'us-west-2',
+    awsRegion: 'us-east-1',
     localAgentUrl: 'http://localhost:8080/invocations',
     maxRunsPerVisitor: '20',
     // NUXT_REPLAY=1 streams simulated fixtures instead of calling the agent (for recording).

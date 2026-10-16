@@ -7,7 +7,7 @@ import os
 
 import boto3
 
-REGION = os.environ.get("AWS_REGION", "us-west-2")
+REGION = os.environ.get("AWS_REGION", "us-east-1")
 MESSAGE = "No puedo confirmar eso. Segun nuestra politica, el plazo de reembolso es de 30 dias."
 
 client = boto3.client("bedrock", region_name=REGION)

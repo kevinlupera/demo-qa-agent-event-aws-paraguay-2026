@@ -30,7 +30,7 @@ STALE_FAQ_PROMPT = (
 
 
 def _apply_guardrail(guardrail_id: str, version: str, answer: str) -> dict:
-    client = boto3.client("bedrock-runtime", region_name=os.environ.get("AWS_REGION", "us-west-2"))
+    client = boto3.client("bedrock-runtime", region_name=os.environ.get("AWS_REGION", "us-east-1"))
     return client.apply_guardrail(
         guardrailIdentifier=guardrail_id, guardrailVersion=version, source="OUTPUT",
         content=[

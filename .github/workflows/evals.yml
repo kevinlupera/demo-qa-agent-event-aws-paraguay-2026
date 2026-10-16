@@ -79,7 +79,7 @@ jobs:
   #   - uses: aws-actions/configure-aws-credentials@v4     # OIDC: sin llaves de larga vida
   #     with:
   #       role-to-assume: ${{ vars.EVAL_ROLE_ARN }}         # permisos mínimos: run/terminate
-  #       aws-region: us-west-2
+  #       aws-region: us-east-1
   #
   #   - name: Crear sandbox (EC2)
   #     run: |
