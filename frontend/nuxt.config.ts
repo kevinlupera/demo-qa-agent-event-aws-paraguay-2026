@@ -8,7 +8,9 @@ export default defineNuxtConfig({
     // Set AGENT_RUNTIME_ARN to hit the deployed AgentCore Runtime. Leave it empty and the
     // server route falls back to a local `python app.py` on LOCAL_AGENT_URL — same events,
     // no AWS round-trip, which is what you want while building the demo.
-    agentRuntimeArn: '',
+    // ponytail: AGENT_RUNTIME_ARN is read at build time too, so a zip deploy (no Amplify build
+    // step, no runtime env injection) can bake it in. NUXT_AGENT_RUNTIME_ARN still wins at runtime.
+    agentRuntimeArn: process.env.AGENT_RUNTIME_ARN ?? '',
     awsRegion: 'us-east-1',
     localAgentUrl: 'http://localhost:8080/invocations',
     maxRunsPerVisitor: '20',
