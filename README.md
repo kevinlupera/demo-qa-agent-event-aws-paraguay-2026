@@ -122,15 +122,23 @@ Si cambias dependencias, actualiza `backend/pyproject.toml` **y** `backend/requi
 
 ### Frontend → AWS Amplify Hosting (SSR)
 
-`NITRO_PRESET=aws-amplify`. Variables:
+Tiene que ser un despliegue **conectado a GitHub**: un zip manual no ejecuta el SSR de Nuxt (Amplify
+lo sirve como estático y `/api/run` no responde). El `amplify.yml` de la raíz ya define el monorepo
+(`appRoot: frontend`) y construye con `NITRO_PRESET=aws-amplify`.
+
+1. Amplify → *Create new app* → GitHub → este repo, rama `main`. Plataforma: **WEB_COMPUTE** (SSR).
+2. *Compute role*: un rol con `bedrock-agentcore:InvokeAgentRuntime` sobre el ARN del Runtime
+   (y sobre `<arn>/runtime-endpoint/*`), con trust `amplify.amazonaws.com`.
+3. Variables de entorno de la app:
 
 | Variable | Valor |
 |---|---|
-| `NUXT_AGENT_RUNTIME_ARN` | el ARN que imprime `agentcore status` |
+| `AMPLIFY_MONOREPO_APP_ROOT` | `frontend` |
+| `AGENT_RUNTIME_ARN` | el ARN que imprime `agentcore status` (se hornea en el build) |
 | `NUXT_AWS_REGION` | `us-east-1` |
-| `NUXT_MAX_RUNS_PER_VISITOR` | `20` (tope por asistente, para no quemar créditos) |
+| `NUXT_MAX_RUNS_PER_VISITOR` | `20` (tope **por instancia**, en memoria; no es un tope global) |
 
-El rol de servicio de Amplify necesita `bedrock-agentcore:InvokeAgentRuntime` sobre ese ARN.
+El ARN se lee en build time para no depender de que Amplify exponga las variables al runtime SSR.
 
 ---
 
