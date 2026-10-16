@@ -87,16 +87,37 @@ credenciales AWS con `bedrock:CreateGuardrail` / `bedrock:ApplyGuardrail`.
 
 ### Backend → AgentCore Runtime
 
+Usa el [AgentCore CLI](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-get-started-cli.html)
+(Node.js 20+, `npm install -g @aws/agentcore`; `uv` para empaquetar). El proyecto `qaagent/` ya
+está versionado y apunta a `backend/` (`CodeZip`, Python 3.12, `us-east-1`; el empaquetado lee
+`backend/pyproject.toml`).
+
 ```bash
-cd backend
-agentcore configure -e app.py            # genera Dockerfile + rol de ejecución
-agentcore launch                          # CodeBuild → ECR → Runtime
+cd qaagent
+agentcore deploy --dry-run                # previsualiza
+agentcore deploy                          # CDK: la primera vez hace bootstrap
+agentcore status                          # imprime el ARN del Runtime
 agentcore invoke '{"demo":"00","guard":true}'
 ```
 
-Variables de entorno del Runtime (nunca dentro de la imagen): `OPENAI_API_KEY`, `OPENAI_MODEL_ID`,
-`GUARDRAIL_ID`, `GUARDRAIL_VERSION`. El rol de ejecución necesita `bedrock:ApplyGuardrail` sobre el
-guardrail y CloudWatch Logs.
+Para recrearlo desde cero:
+
+```bash
+agentcore create --project-name qaagent --no-agent --build CodeZip --language Python \
+  --protocol HTTP --model-provider OpenAI --memory none
+cd qaagent
+agentcore add agent --name qa_agent --type byo --build CodeZip --language Python --protocol HTTP \
+  --network-mode PUBLIC --code-location ../backend --entrypoint app.py --framework Strands \
+  --model-provider OpenAI
+```
+
+El nombre del proyecto es solo alfanumérico (máx. 23). Variables de entorno del Runtime (nunca en
+el repo): `OPENAI_API_KEY`, `OPENAI_MODEL_ID`, `GUARDRAIL_ID`, `GUARDRAIL_VERSION`. El rol de
+ejecución necesita `bedrock:ApplyGuardrail` sobre el guardrail. `qaagent/agentcore/.env.local` y
+`deployed-state.json` están ignorados por git.
+
+Si cambias dependencias, actualiza `backend/pyproject.toml` **y** `backend/requirements.txt`
+(el primero lo usa el deploy, el segundo el CI).
 
 ### Frontend → AWS Amplify Hosting (SSR)
 
@@ -104,8 +125,8 @@ guardrail y CloudWatch Logs.
 
 | Variable | Valor |
 |---|---|
-| `NUXT_AGENT_RUNTIME_ARN` | el ARN que imprime `agentcore launch` |
-| `NUXT_AWS_REGION` | `us-west-2` |
+| `NUXT_AGENT_RUNTIME_ARN` | el ARN que imprime `agentcore status` |
+| `NUXT_AWS_REGION` | `us-east-1` |
 | `NUXT_MAX_RUNS_PER_VISITOR` | `20` (tope por asistente, para no quemar créditos) |
 
 El rol de servicio de Amplify necesita `bedrock-agentcore:InvokeAgentRuntime` sobre ese ARN.
