@@ -1,0 +1,12 @@
+[project]
+name = "qa-agent-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "strands-agents[openai]>=1.44.0",
+  "strands-agents-evals>=0.2.1",
+  "bedrock-agentcore>=0.1.0",
+  "boto3>=1.35.0",
+  "pydantic>=2.0.0",
+  "python-dotenv>=1.0.0",
+]
