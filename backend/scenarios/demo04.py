@@ -86,6 +86,7 @@ async def run(guard: bool = True):
         yield step(RESILIENT, f"el cliente recibe: {BLOCKED_MESSAGE}")
     else:
         yield hook_event(RESILIENT, "verified", "action: NONE — la respuesta está respaldada y pasa.")
+        yield step(RESILIENT, f"respuesta al cliente: {shorten(answer)}")
     yield verdict(
         RESILIENT, ok=intervened == bad,
         summary=("Bloqueada antes del cliente: grounding por debajo del umbral. Ningún dataset cubre "

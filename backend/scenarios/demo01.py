@@ -85,14 +85,18 @@ async def run(guard: bool = True):
 
     yield phase(RESILIENT, "Agente que sigue el proceso: get_policy → get_order")
     fix_meter, fix_store = Meter(RESILIENT), R.Store()
+    fixed_answer = {}
 
     def disciplined(case):
         a = Agent(model=model(), tools=R.build_tools(fix_store), system_prompt=R.REFUND_POLICY,
                   callback_handler=None)
         out = fix_meter.record(a(case.input))
+        fixed_answer["text"] = str(out)
         return {"output": str(out), "trajectory": [c["name"] for c in tool_calls(a)]}
 
     proper = await _judge(disciplined)
+    if fixed_answer:
+        yield step(RESILIENT, f"respuesta: {shorten(fixed_answer['text'])}")
     for ev in _card(RESILIENT, proper):
         yield ev
     yield fix_meter.event()

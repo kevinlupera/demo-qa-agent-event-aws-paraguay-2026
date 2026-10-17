@@ -86,6 +86,14 @@
     }
   },
   {
+    "delayMs": 900,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "respuesta: Revisé la política (30 días) y el pedido A-1002 (45 días): está fuera de política, por lo que no corresponde el reembolso."
+    }
+  },
+  {
     "delayMs": 3600,
     "event": {
       "t": "step",

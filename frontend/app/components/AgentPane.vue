@@ -23,6 +23,10 @@ const HOOK_LABEL: Record<string, string> = {
   verified: 'VERIFICADO',
 }
 
+// Agent → customer replies arrive as steps prefixed "respuesta:" / "respuesta al cliente:" / "el cliente recibe:".
+const REPLY = /^(respuesta(?: al cliente)?|el cliente recibe):\s*/i
+const replyOf = (e: AgentEvent) => (e.t === 'step' && e.text ? REPLY.exec(e.text) : null)
+
 const log = ref<HTMLElement | null>(null)
 watch(() => props.events.length, async () => {
   await nextTick()
@@ -46,6 +50,11 @@ watch(() => props.events.length, async () => {
 
       <template v-for="(e, i) in events" :key="i">
         <p v-if="e.t === 'phase'" class="phase">{{ e.title }}</p>
+
+        <div v-else-if="replyOf(e)" class="reply">
+          <span class="reply-tag">Respuesta del agente al usuario</span>
+          <p>{{ e.text!.replace(REPLY, '') }}</p>
+        </div>
 
         <p v-else-if="e.t === 'step'" class="step">{{ e.text }}</p>
 
@@ -135,6 +144,25 @@ header h2 { margin: 0; font-family: var(--font-display); font-weight: 600; font-
 .phase:first-child { margin-top: 0.2rem !important; border-top: 0; padding-top: 0; }
 .step { color: var(--muted); padding-left: 0.9rem; position: relative; }
 .step::before { content: "·"; position: absolute; left: 0; color: var(--muted-dim); }
+
+.log .reply {
+  margin: 0.7rem 0;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  background: var(--accent-dim);
+}
+.reply-tag {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.log .reply p { margin: 0; font-size: 0.92rem; line-height: 1.55; color: var(--fg); }
 
 .tool-name { color: var(--accent); font-weight: 600; }
 .tool code { color: var(--muted-dim); margin-left: 0.4rem; }

@@ -130,6 +130,14 @@
     }
   },
   {
+    "delayMs": 600,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "respuesta: Esa compra tiene 45 días y nuestra política de reembolsos es de 30, así que está fuera de política y no puedo reembolsarla. Si quieres, te ayudo a revisar otras opciones."
+    }
+  },
+  {
     "delayMs": 250,
     "event": {
       "t": "tokens",
