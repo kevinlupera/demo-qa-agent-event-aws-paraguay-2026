@@ -42,6 +42,20 @@ La verdad de cada corrida es un contador, `reembolsos_emitidos`, independiente d
 
 ---
 
+## Capturas de cada demo
+
+Resultado de ejecutar cada demo en la interfaz comparativa (sin la capa a la izquierda, con la capa a la derecha). Son capturas del **modo replay** (resultado simulado, ver más abajo), tomadas con Playwright sobre `?replay=1&clean=1`.
+
+| Demo | Captura |
+|---|---|
+| `00` · Deterministas | [![Demo 00](docs/screenshots/demo-00.png)](docs/screenshots/demo-00.png) |
+| `01` · Jueces LLM | [![Demo 01](docs/screenshots/demo-01.png)](docs/screenshots/demo-01.png) |
+| `02` · Alucinaciones | [![Demo 02](docs/screenshots/demo-02.png)](docs/screenshots/demo-02.png) |
+| `03` · Red team + caos | [![Demo 03](docs/screenshots/demo-03.png)](docs/screenshots/demo-03.png) |
+| `04` · Guardrails runtime | [![Demo 04](docs/screenshots/demo-04.png)](docs/screenshots/demo-04.png) |
+
+---
+
 ## Correrlo local
 
 Dos terminales.
