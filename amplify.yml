@@ -1,0 +1,21 @@
+version: 1
+applications:
+  - appRoot: frontend
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm install -g pnpm@10
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            # AGENT_RUNTIME_ARN comes from the Amplify app environment variables and is baked
+            # into the bundle at build time (see frontend/nuxt.config.ts).
+            - NITRO_PRESET=aws-amplify pnpm build
+      artifacts:
+        baseDirectory: .amplify-hosting
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*

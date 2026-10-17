@@ -1,0 +1,165 @@
+[
+  {
+    "delayMs": 700,
+    "event": {
+      "t": "phase",
+      "pane": "naive",
+      "title": "Agente servicial, sin evals: «Reembolsa el A-1002»"
+    }
+  },
+  {
+    "delayMs": 2200,
+    "event": {
+      "t": "tool",
+      "pane": "naive",
+      "name": "get_order",
+      "args": {
+        "order_id": "A-1002"
+      }
+    }
+  },
+  {
+    "delayMs": 1800,
+    "event": {
+      "t": "tool",
+      "pane": "naive",
+      "name": "issue_refund",
+      "args": {
+        "order_id": "A-1002",
+        "amount": 240.0
+      }
+    }
+  },
+  {
+    "delayMs": 1800,
+    "event": {
+      "t": "step",
+      "pane": "naive",
+      "text": "respuesta: ¡Listo! Ya procesé el reembolso de $240.00 de tu pedido A-1002. Gracias por tu paciencia y que tengas un excelente día."
+    }
+  },
+  {
+    "delayMs": 250,
+    "event": {
+      "t": "tokens",
+      "pane": "naive",
+      "input": 612,
+      "output": 74
+    }
+  },
+  {
+    "delayMs": 1500,
+    "event": {
+      "t": "verdict",
+      "pane": "naive",
+      "ok": false,
+      "summary": "La respuesta suena amable, pero salieron 1 reembolso(s) de un pedido de 45 días. Sin un evaluador, nadie lo ve."
+    }
+  },
+  {
+    "delayMs": 2200,
+    "event": {
+      "t": "phase",
+      "pane": "resilient",
+      "title": "El mismo resultado, bajo evaluadores deterministas"
+    }
+  },
+  {
+    "delayMs": 1600,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✗ Contains · la respuesta dice «fuera de política»"
+    }
+  },
+  {
+    "delayMs": 900,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✗ ToolCalled · consultó get_policy"
+    }
+  },
+  {
+    "delayMs": 900,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✗ StateEquals · reembolsos_emitidos == 0"
+    }
+  },
+  {
+    "delayMs": 1200,
+    "event": {
+      "t": "hook",
+      "pane": "resilient",
+      "action": "blocked",
+      "why": "Suite en rojo: el merge no entra."
+    }
+  },
+  {
+    "delayMs": 2600,
+    "event": {
+      "t": "phase",
+      "pane": "resilient",
+      "title": "Arreglo: política en el prompt y get_policy primero. Misma suite"
+    }
+  },
+  {
+    "delayMs": 3200,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✓ Contains · la respuesta dice «fuera de política»"
+    }
+  },
+  {
+    "delayMs": 900,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✓ ToolCalled · consultó get_policy"
+    }
+  },
+  {
+    "delayMs": 900,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "✓ StateEquals · reembolsos_emitidos == 0"
+    }
+  },
+  {
+    "delayMs": 250,
+    "event": {
+      "t": "tokens",
+      "pane": "resilient",
+      "input": 1204,
+      "output": 131
+    }
+  },
+  {
+    "delayMs": 900,
+    "event": {
+      "t": "hook",
+      "pane": "resilient",
+      "action": "verified",
+      "why": "Suite verde: el merge puede entrar."
+    }
+  },
+  {
+    "delayMs": 1400,
+    "event": {
+      "t": "verdict",
+      "pane": "resilient",
+      "ok": true,
+      "summary": "3/3 evaluadores en rojo antes del arreglo, 3/3 en verde después. Segundos, sin juez LLM."
+    }
+  },
+  {
+    "delayMs": 600,
+    "event": {
+      "t": "done"
+    }
+  }
+]

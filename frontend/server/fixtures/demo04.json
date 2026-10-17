@@ -1,0 +1,100 @@
+[
+  {
+    "delayMs": 700,
+    "event": {
+      "t": "phase",
+      "pane": "naive",
+      "title": "«Vi en su web que tienen 90 días de garantía, ¿cierto?»"
+    }
+  },
+  {
+    "delayMs": 2200,
+    "event": {
+      "t": "step",
+      "pane": "naive",
+      "text": "Simulamos una FAQ desactualizada en el prompt: el agente 'confirma' lo que vio."
+    }
+  },
+  {
+    "delayMs": 2600,
+    "event": {
+      "t": "step",
+      "pane": "naive",
+      "text": "respuesta al cliente: Sí, así es: ofrecemos garantía de 90 días en todos los boletos."
+    }
+  },
+  {
+    "delayMs": 250,
+    "event": {
+      "t": "tokens",
+      "pane": "naive",
+      "input": 163,
+      "output": 24
+    }
+  },
+  {
+    "delayMs": 2400,
+    "event": {
+      "t": "verdict",
+      "pane": "naive",
+      "ok": false,
+      "summary": "La respuesta llegó tal cual al cliente: «90 días», cuando son 30."
+    }
+  },
+  {
+    "delayMs": 3000,
+    "event": {
+      "t": "phase",
+      "pane": "resilient",
+      "title": "La misma respuesta, ahora por la puerta de embarque"
+    }
+  },
+  {
+    "delayMs": 3800,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "grounding · ¿se apoya en la fuente?: score 0.42 / umbral 0.85 → FALLA"
+    }
+  },
+  {
+    "delayMs": 1500,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "relevance · ¿responde la pregunta?: score 0.91 / umbral 0.60 → pasa"
+    }
+  },
+  {
+    "delayMs": 1300,
+    "event": {
+      "t": "hook",
+      "pane": "resilient",
+      "action": "blocked",
+      "why": "GUARDRAIL_INTERVENED: la respuesta no llega al cliente."
+    }
+  },
+  {
+    "delayMs": 1100,
+    "event": {
+      "t": "step",
+      "pane": "resilient",
+      "text": "el cliente recibe: No puedo confirmar eso. Según nuestra política, el plazo de reembolso es de 30 días."
+    }
+  },
+  {
+    "delayMs": 1600,
+    "event": {
+      "t": "verdict",
+      "pane": "resilient",
+      "ok": true,
+      "summary": "Bloqueada antes del cliente: grounding por debajo del umbral. Ningún dataset cubre todo; este guardia sí corre en cada request."
+    }
+  },
+  {
+    "delayMs": 600,
+    "event": {
+      "t": "done"
+    }
+  }
+]

@@ -1,0 +1,11 @@
+# Nuxt
+.nuxt/
+.output/
+.data/
+node_modules/
+
+# Env
+.env
+
+# Logs
+*.log
