@@ -77,17 +77,21 @@ async def run(guard: bool = True):
 
     yield phase(RESILIENT, "Arreglo: política en el prompt y get_policy primero. Misma suite")
     fix_meter, fix_store = Meter(RESILIENT), R.Store()
+    fixed_answer = {}
 
     def fixed_task(case):
         fixed = Agent(model=model(), tools=R.build_tools(fix_store),
                       system_prompt=R.REFUND_POLICY, callback_handler=None)
         out = fix_meter.record(fixed(case.input))
+        fixed_answer["text"] = str(out)
         return {"output": str(out), "trajectory": [c["name"] for c in tool_calls(fixed)],
                 "environment_state": fix_store.state()}
 
     second = await _suite(fixed_task)
     for ev in _lines(RESILIENT, second):
         yield ev
+    if fixed_answer:
+        yield step(RESILIENT, f"respuesta: {shorten(fixed_answer['text'])}")
     yield fix_meter.event()
     green = all(r["pass"] for r in second.values())
     yield hook_event(RESILIENT, "verified" if green else "blocked",
